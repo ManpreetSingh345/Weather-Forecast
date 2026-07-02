@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="WeatherVision — Real-time global weather forecasts, 7-day outlook, hourly analytics, and data export powered by Open-Meteo." />
+  <meta name="keywords" content="weather, forecast, real-time, open-meteo, temperature, precipitation" />
+  <title>WeatherVision — Real-Time Weather Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ─── Ambient Background Glows ─── -->
+  <div class="ambient-bg" id="ambientBg">
+    <div class="glow glow-1" id="glow1"></div>
+    <div class="glow glow-2" id="glow2"></div>
+    <div class="glow glow-3" id="glow3"></div>
+  </div>
+
+  <!-- ─── Navbar ─── -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-brand">
+      <div class="brand-icon">⛅</div>
+      <div class="brand-text">
+        <span class="brand-name">WeatherVision</span>
+        <span class="brand-tagline">Real-time Forecasts</span>
+      </div>
+    </div>
+    <div class="nav-location" id="navLocation"></div>
+    <div class="nav-right">
+      <div class="live-clock" id="liveClock">-- : -- --</div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle light and dark theme" title="Toggle theme">
+        <div class="toggle-track">
+          <span class="toggle-sun">☀️</span>
+          <span class="toggle-moon">🌙</span>
+          <div class="toggle-thumb"></div>
+        </div>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── Main Content ─── -->
+  <main class="main-content" id="mainContent">
+
+    <!-- Search Section -->
+    <section class="search-section" id="searchSection">
+      <div class="search-hero-text" id="searchHeroText">
+        <h1 class="hero-title">What's the Weather Like?</h1>
+        <p class="hero-subtitle">Search any city worldwide for instant, real-time forecasts</p>
+      </div>
+      <div class="search-row">
+        <div class="search-box-wrapper">
+          <div class="search-box" id="searchBox">
+            <span class="search-icon">🔍</span>
+            <input
+              type="text"
+              id="searchInput"
+              class="search-input"
+              placeholder="Search for a city, e.g. London, Tokyo..."
+              autocomplete="off"
+              spellcheck="false"
+            />
+            <button class="search-clear" id="searchClear" aria-label="Clear search">✕</button>
+          </div>
+          <div class="search-dropdown" id="searchDropdown"></div>
+        </div>
+        <button class="geo-btn" id="geoBtn" aria-label="Use current location">
+          <span class="geo-icon">📍</span>
+          <span>Use My Location</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ─── Dashboard Area ─── -->
+    <div class="dashboard" id="dashboard">
+
+      <!-- Skeleton Loader -->
+      <div class="skeleton-wrapper" id="skeletonLoader">
+        <div class="skeleton-card skeleton-hero-card">
+          <div class="skeleton-main-info">
+            <div class="sk sk-icon"></div>
+            <div class="sk sk-temp"></div>
+            <div class="sk sk-label" style="width:130px"></div>
+            <div class="sk sk-label" style="width:100px;height:14px;margin-top:6px"></div>
+          </div>
+          <div class="skeleton-stats-grid">
+            <div class="sk sk-stat-card"></div>
+            <div class="sk sk-stat-card"></div>
+            <div class="sk sk-stat-card"></div>
+            <div class="sk sk-stat-card"></div>
+            <div class="sk sk-stat-card"></div>
+            <div class="sk sk-stat-card"></div>
+          </div>
+        </div>
+        <div class="skeleton-forecast-row">
+          <div class="sk sk-forecast-card"></div>
+          <div class="sk sk-forecast-card"></div>
+          <div class="sk sk-forecast-card"></div>
+          <div class="sk sk-forecast-card"></div>
+          <div class="sk sk-forecast-card"></div>
+          <div class="sk sk-forecast-card"></div>
+          <div class="sk sk-forecast-card"></div>
+        </div>
+        <div class="sk sk-chart"></div>
+      </div>
+
+      <!-- Error Banner -->
+      <div class="error-banner" id="errorBanner" role="alert">
+        <div class="error-content">
+          <span class="error-emoji">⚠️</span>
+          <div class="error-text">
+            <strong class="error-title">Something went wrong</strong>
+            <p class="error-message" id="errorMessage">Unable to fetch weather data.</p>
+          </div>
+        </div>
+        <button class="retry-btn" id="retryBtn">↻ Retry</button>
+      </div>
+
+      <!-- ─── Weather Dashboard Content ─── -->
+      <div class="weather-content" id="weatherContent">
+
+        <!-- Current Weather Card -->
+        <div class="current-weather-card" id="currentWeatherCard">
+          <div class="card-glow" id="cardGlow"></div>
+          <div class="cw-layout">
+
+            <!-- Left: Main Display -->
+            <div class="cw-main">
+              <div class="cw-weather-icon" id="cwIcon">☀️</div>
+              <div class="cw-temp-row">
+                <span class="cw-temp" id="cwTemp">--</span>
+                <span class="cw-unit">°C</span>
+              </div>
+              <div class="cw-condition" id="cwCondition">--</div>
+              <div class="cw-location" id="cwLocation">--</div>
+              <div class="cw-feels" id="cwFeels">Feels like --°C</div>
+              <div class="cw-highlow" id="cwHighLow">↑ --° &nbsp; ↓ --°</div>
+            </div>
+
+            <!-- Right: Stats Grid -->
+            <div class="cw-stats">
+              <div class="cw-stat-card">
+                <div class="cw-stat-icon">💧</div>
+                <div class="cw-stat-body">
+                  <span class="cw-stat-label">Humidity</span>
+                  <span class="cw-stat-value" id="valHumidity">--%</span>
+                </div>
+              </div>
+              <div class="cw-stat-card">
+                <div class="cw-stat-icon">💨</div>
+                <div class="cw-stat-body">
+                  <span class="cw-stat-label">Wind</span>
+                  <span class="cw-stat-value" id="valWind">-- km/h</span>
+                </div>
+              </div>
+              <div class="cw-stat-card">
+                <div class="cw-stat-icon">🌞</div>
+                <div class="cw-stat-body">
+                  <span class="cw-stat-label">UV Index</span>
+                  <span class="cw-stat-value" id="valUV">--</span>
+                </div>
+              </div>
+              <div class="cw-stat-card">
+                <div class="cw-stat-icon">🧭</div>
+                <div class="cw-stat-body">
+                  <span class="cw-stat-label">Pressure</span>
+                  <span class="cw-stat-value" id="valPressure">-- hPa</span>
+                </div>
+              </div>
+              <div class="cw-stat-card">
+                <div class="cw-stat-icon">☁️</div>
+                <div class="cw-stat-body">
+                  <span class="cw-stat-label">Cloud Cover</span>
+                  <span class="cw-stat-value" id="valCloud">--%</span>
+                </div>
+              </div>
+              <div class="cw-stat-card">
+                <div class="cw-stat-icon">🧲</div>
+                <div class="cw-stat-body">
+                  <span class="cw-stat-label">Wind Dir</span>
+                  <span class="cw-stat-value" id="valWindDir">--</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Update Indicator -->
+          <div class="live-indicator">
+            <span class="pulse-dot"></span>
+            <span class="live-text" id="liveText">Live · Last updated just now</span>
+          </div>
+        </div>
+
+        <!-- 7-Day Forecast -->
+        <section class="forecast-section">
+          <h2 class="section-title">
+            <span class="section-title-icon">📅</span>
+            7-Day Forecast
+          </h2>
+          <div class="forecast-grid" id="forecastGrid">
+            <!-- Populated by JS -->
+          </div>
+        </section>
+
+        <!-- Analytics Charts -->
+        <section class="charts-section">
+          <div class="charts-header">
+            <h2 class="section-title">
+              <span class="section-title-icon">📊</span>
+              Analytics Dashboard
+            </h2>
+            <div class="chart-tab-group" role="tablist">
+              <button class="chart-tab active" data-tab="temperature" id="tabTemp" role="tab" aria-selected="true">🌡️ Temperature &amp; Rain</button>
+              <button class="chart-tab" data-tab="wind" id="tabWind" role="tab" aria-selected="false">💨 Wind &amp; Humidity</button>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="weatherChart" aria-label="Weather analytics chart" role="img"></canvas>
+          </div>
+        </section>
+
+        <!-- Export Section -->
+        <div class="export-row">
+          <button class="export-btn" id="exportBtn" aria-label="Export weather report as CSV">
+            <span class="export-icon">📥</span>
+            Export Weather Report (CSV)
+          </button>
+          <p class="export-hint">Downloads a complete 7-day forecast &amp; hourly data report</p>
+        </div>
+
+      </div><!-- /weather-content -->
+
+      <!-- Welcome / Empty State -->
+      <div class="welcome-state" id="welcomeState">
+        <div class="welcome-globe">🌍</div>
+        <h2 class="welcome-title">Explore Global Weather</h2>
+        <p class="welcome-text">Search any city or use your device's location to get real-time weather data, 7-day forecasts, and interactive analytics.</p>
+        <div class="welcome-features">
+          <div class="wf-item"><span>🌡️</span><span>Live updates every minute</span></div>
+          <div class="wf-item"><span>📅</span><span>7-day detailed forecast</span></div>
+          <div class="wf-item"><span>📊</span><span>Temperature &amp; rain charts</span></div>
+          <div class="wf-item"><span>📥</span><span>Export data as CSV</span></div>
+        </div>
+      </div>
+
+    </div><!-- /dashboard -->
+  </main>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Chart.js from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
